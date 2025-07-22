@@ -8,7 +8,7 @@ use clap::Parser;
 ///
 use sp1_sdk::{include_elf, Prover, SP1Proof, SP1Stdin};
 use sp1_tc_demo_bin::{Args, SP1Tornado::SP1TornadoInstance};
-use sp1_tc_demo_merkle_lib::{MerkleTree, proof::ProofInput};
+use sp1_tc_demo_merkle_lib::{proof::ProofInput, MerkleTree};
 use tiny_keccak::{Hasher, Keccak};
 
 const ELF: &[u8] = include_elf!("sp1-tc-demo-program");
@@ -19,10 +19,11 @@ async fn main() {
 
     let prover = sp1_sdk::CpuProver::new();
     let (pk, vk) = prover.setup(ELF);
+    let provider = args.provider();
 
+    // Load the note.
     let note = std::fs::read(&args.note_path).expect("Failed to read note");
     assert!(note.len() == 68, "Note must be 68 bytes long");
-
     let sk: FixedBytes<32> = note[0..32]
         .try_into()
         .expect("Failed to convert sk to bytes");
@@ -35,16 +36,18 @@ async fn main() {
             .expect("Failed to convert index to bytes"),
     );
 
-    let provider = args.provider();
-
+    // Get the contract root
     let contract = SP1TornadoInstance::new(args.contract_address, &provider);
     let root = contract.root().call().await.expect("Failed to get root");
 
-    println!("Getting all leafs for root: {:?}", root);
+    // Build the tree locally
     let leafs = get_all_leafs(&contract).await;
-    let tree = MerkleTree::from_leaves(leafs);
-
+    let tree = MerkleTree::from_leaves(leafs.clone());
+    
     println!("Claimed index: {:?}", index);
+    println!("Local root: {:?}", tree.root());
+    println!("Contract root: {:?}", root);
+
 
     let mut stdin = SP1Stdin::new();
     let proof_input = ProofInput {
@@ -90,18 +93,21 @@ async fn main() {
         .await
         .expect("Failed to get receipt");
 
-    println!("Withdrawal successful");
+    println!("Withdraw successful");
     println!("tx hash: {}", receipt.transaction_hash);
 }
 
 async fn get_all_leafs<P: Provider>(contract: &SP1TornadoInstance<P>) -> Vec<FixedBytes<32>> {
     let mut leafs = Vec::new();
-    let events = contract
+    let mut events = contract
         .LeafInserted_filter()
         .from_block(0)
         .query()
         .await
         .unwrap();
+
+    events.sort_by_key(|e| e.0.index);
+
     for (event, _) in events {
         leafs.push(event.leaf);
     }

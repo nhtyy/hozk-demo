@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
 
 uint8 constant TREE_DEPTH = 32;
@@ -27,8 +27,6 @@ library MerkleTreeLib {
         return tree;
     }
 
-    /// @notice Append a new leaf and update the stored root
-    /// @return index the position assigned to `leaf`
     function insert(MerkleTree storage tree, bytes32 leaf) internal returns (uint32 index) {
         index = tree.nextIndex;
         require(index < MAX_LEAVES, "tree full");
@@ -38,20 +36,15 @@ library MerkleTreeLib {
 
         for (uint8 level = 0; level < TREE_DEPTH; ++level) {
             if (idx & 1 == 0) {
-                // we fill the left slot for this level
                 tree.filledSubtree[level] = currentHash;
                 currentHash = keccak256(abi.encodePacked(currentHash, tree.zeroHash[level]));
             } else {
-                // left slot already filled → combine and carry
                 currentHash = keccak256(abi.encodePacked(tree.filledSubtree[level], currentHash));
-                tree.filledSubtree[level] = bytes32(0);
             }
             idx >>= 1;
         }
 
         tree.root = currentHash;
-
-        // NOTE: Bounded by MAX_LEAVES
         unchecked {
             tree.nextIndex += 1;
         }

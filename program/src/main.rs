@@ -35,7 +35,7 @@ fn main() {
     );
 
     // Compute the nullifier hash
-    let nullifier_hash = {
+    let nullifier_hash: [u8; 32] = {
         let mut hasher = Keccak::v256();
         hasher.update(nullifier.as_slice());
         let mut hash = [0u8; 32];

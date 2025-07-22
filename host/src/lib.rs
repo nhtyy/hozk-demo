@@ -32,9 +32,10 @@ pub struct Args {
 
     #[clap(
         long,
-        default_value = "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
+        default_value = "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
+        
     )]
-    pub signer: String,
+    pub private_key: String,
 
     #[clap(long, default_value = "note.bin")]
     pub note_path: PathBuf,
@@ -42,7 +43,7 @@ pub struct Args {
 
 impl Args {
     pub fn signer(&self) -> PrivateKeySigner {
-        self.signer.parse().expect("Invalid signer")
+        self.private_key.parse().expect("Invalid signer")
     }
 
     pub fn provider(&self) -> impl Provider {

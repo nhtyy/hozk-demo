@@ -20,7 +20,7 @@ contract SP1TornadoScript is Script {
 
         // Get the vkey from the environment
         bytes32 vkey = vm.envBytes32("SP1_PROGRAM_VKEY");
-        
+
         // Deploy the tornado
         new SP1Tornado(1 ether, address(gateway), vkey);
 

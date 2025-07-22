@@ -1,7 +1,10 @@
 use sp1_sdk::{CpuProver, HashableKey, Prover};
-use sp1_tc_demo_bin::ELF;
+use sp1_tc_demo_bin::{ELF, Args};
+use clap::Parser;
 
 fn main() {
+    let args = Args::parse();
+
     let prover = CpuProver::new();
     let (_, vk) = prover.setup(ELF);
     println!("vk: {:?}", vk.bytes32());
@@ -11,10 +14,13 @@ fn main() {
         .args(&[
             "script",
             "script/Deploy.s.sol",
-            "--private-key=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
-            "--sender=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+            "--private-key",
+            args.private_key.as_str(),
+            "--sender",
+            args.signer().address().to_string().as_str(),
             "--broadcast",
-            "--rpc-url=http://localhost:8545",
+            "--rpc-url",
+            args.rpc_url.as_str(),
         ])
         .current_dir("contracts")
         .env("SP1_PROGRAM_VKEY", vk.bytes32())
