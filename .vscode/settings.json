@@ -1,0 +1,7 @@
+{
+    "rust-analyzer.procMacro.enable": true,
+    "rust-analyzer.linkedProjects": [
+        "${workspaceFolder}/program/Cargo.toml",
+        "${workspaceFolder}/Cargo.toml"
+    ]
+}

@@ -1,0 +1,11 @@
+[package]
+name = "sp1-tc-demo-merkle-lib"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+tiny-keccak.workspace = true
+serde.workspace = true
+
+alloy = { version = "1.0.22", default-features = false, features = ["sol-types", "serde"] }
+lazy_static = "1.5.0"
