@@ -10,6 +10,8 @@ struct ProofCommitment {
 }
 
 contract SP1Tornado {
+    using MerkleTreeLib for MerkleTree;
+
     event LeafInserted(bytes32 leaf, uint32 index);
 
     mapping(bytes32 => bool) public nullifierHash;
@@ -28,7 +30,7 @@ contract SP1Tornado {
     function deposit(bytes32 noteHash) public payable {
         require(msg.value == depositAmount, "Invalid deposit amount");
 
-        uint32 idx = MerkleTreeLib.insert(tree, noteHash);
+        uint32 idx = tree.insert(noteHash);
         emit LeafInserted(noteHash, idx);
     }
 
