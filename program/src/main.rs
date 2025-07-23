@@ -31,7 +31,7 @@ fn main() {
     // Verify the proof
     assert!(
         verify_proof(root, claimed_leaf.into(), index, path),
-        "Proof verifcation failed."
+        "Proof verification failed."
     );
 
     // Compute the nullifier hash
