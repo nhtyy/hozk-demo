@@ -1,11 +1,5 @@
 use alloy::{hex, primitives::FixedBytes, providers::Provider};
 use clap::Parser;
-/// Fetch all events
-/// build merkle tree
-/// get proof path
-/// create a proof
-/// submit to contract
-///
 use sp1_sdk::{include_elf, Prover, SP1Proof, SP1Stdin};
 use sp1_tc_demo_bin::{Args, SP1Tornado::SP1TornadoInstance};
 use sp1_tc_demo_merkle_lib::{proof::ProofInput, MerkleTree};

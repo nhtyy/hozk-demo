@@ -17,9 +17,6 @@ Go: Install [Go](https://go.dev/doc/install)
 
 ## Usage
 
-First run:
-`pushd contracts && forge install && popd`
-
 Start two terminals, in the first run
 `anvil`
 

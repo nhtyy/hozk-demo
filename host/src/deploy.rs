@@ -9,6 +9,16 @@ fn main() {
     let (_, vk) = prover.setup(ELF);
     println!("vk: {:?}", vk.bytes32());
 
+    let forge_install_status = std::process::Command::new("forge")
+        .arg("install")
+        .current_dir("contracts")
+        .status()
+        .expect("failed to run forge install");
+
+    if !forge_install_status.success() {
+        panic!("forge install failed");
+    }
+
     // Deploy to anvil using the default private key.
     let forge_status = std::process::Command::new("forge")
         .args(&[
